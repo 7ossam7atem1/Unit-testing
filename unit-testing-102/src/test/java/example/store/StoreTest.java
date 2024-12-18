@@ -18,6 +18,7 @@ public class StoreTest {
 
     @BeforeEach
     void setUp() {
+        // Arrange
         AccountManagerImpl accountManager = new AccountManagerImpl();
         store = new StoreImpl(accountManager);
 
@@ -38,17 +39,21 @@ public class StoreTest {
 
     @Test
     void givenProductOutOfStock_WhenBuy_ThenThrowException() {
+        // Arrange
         Product product = products.get(1);
 
+        // Act & Assert
         Exception exception = assertThrows(RuntimeException.class, () -> store.buy(product, customer));
         assertEquals("Product out of stock", exception.getMessage());
     }
 
     @Test
     void givenInsufficientFunds_WhenBuy_ThenThrowException() {
+        // Arrange
         Product product = products.get(0);
         customer.setBalance(100);
 
+        // Act & Assert
         Exception exception = assertThrows(RuntimeException.class, () -> store.buy(product, customer));
         System.out.println(exception.getMessage());
         assertEquals("Payment failure: insufficient account balance", exception.getMessage());
@@ -57,40 +62,51 @@ public class StoreTest {
 
     @Test
     void givenSuccessfulPurchase_WhenBuy_ThenReduceProductQuantity() {
+        // Arrange
         Product product = products.get(0);
 
+        // Act
         store.buy(product, customer);
 
+        // Assert
         assertEquals(9, product.getQuantity());
         assertEquals(800, customer.getBalance());
     }
 
     @Test
     void givenNegativeProductQuantity_WhenBuy_ThenThrowException() {
+        // Arrange
         Product product = new Product("Invalid Product", 100, -1);
 
+        // Act & Assert
         Exception exception = assertThrows(RuntimeException.class, () -> store.buy(product, customer));
         assertEquals("Product out of stock", exception.getMessage());
     }
 
     @Test
     void givenZeroPriceProduct_WhenBuy_ThenAllowPurchaseAndReduceQuantity() {
+        // Arrange
         Product product = products.get(3);
 
+        // Act
         store.buy(product, customer);
 
+        // Assert
         assertEquals(19, product.getQuantity());
         assertEquals(1000, customer.getBalance());
     }
 
     @Test
     void givenMultiplePurchases_WhenBuy_ThenTrackBalancesAndQuantities() {
+        // Arrange
         Product product1 = products.get(0);
         Product product3 = products.get(2);
 
+        // Act
         store.buy(product1, customer);
         store.buy(product3, customer);
 
+        // Assert
         assertEquals(9, product1.getQuantity());
         assertEquals(4, product3.getQuantity());
         assertEquals(750, customer.getBalance());
